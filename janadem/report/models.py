@@ -12,3 +12,8 @@ class ReportModel(models.Model):
         db_table = 'reports'
         app_label = 'Reports'
         managed = False
+
+class Location(models.Model):  # Замените models.model на models.Model
+    name = models.CharField(max_length=100)
+    latitude = models.FloatField()
+    longitude = models.FloatField()

@@ -6,7 +6,6 @@ class UserModel(models.Model):
     password = models.CharField(max_length=100) 
     birth_date = models.DateField()
     
-
     class Meta:
         db_table = 'users'
 
