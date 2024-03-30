@@ -4,9 +4,6 @@ from .views import IssueModelViewSet
 
 router = DefaultRouter()
 
-urlpatterns = [
-    path('')
-]
-
+router.register('', IssueModelViewSet, basename='issue')
 
 urlpatterns = router.urls

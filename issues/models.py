@@ -8,4 +8,10 @@ class Issue(models.Model):
     longitude = models.FloatField()
     latitude = models.FloatField()
 
+    def __str__(self):
+        return self.title
     
+    class Meta:
+        verbose_name = 'Issue'
+        verbose_name_plural = 'Issues'
+        db_table = 'Issue'
