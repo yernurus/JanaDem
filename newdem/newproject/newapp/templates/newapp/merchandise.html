@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Merchandise</title>
+</head>
+<body>
+    <h1>Merchandise</h1>
+    <ul>
+        {% for merchandise in merchandise_list %}
+            <li>{{ merchandise.name }} - {{ merchandise.points_required }} points
+                <form action="{% url 'redeem_points' merchandise.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Redeem</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
