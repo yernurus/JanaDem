@@ -23,6 +23,7 @@ urlpatterns = [
 
     path(f'{api_version}user/', include("account.urls")),
     path(f'{api_version}issue/', include("issues.urls")), 
+    # path(f'{api_version}akim/', include("akim.urls")),
 ]
 
 
