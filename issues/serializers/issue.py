@@ -6,3 +6,9 @@ class IssueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issue
         fields = '__all__'
+
+
+class IssueChangeStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Issue
+        fields = ['id', 'status']

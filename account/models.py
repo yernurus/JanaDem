@@ -30,10 +30,11 @@ class CustomUserManager(UserManager):
 
         return self.create_user(phone_number, password, **extra_fields)
 
+
 class User(AbstractUser):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=32)
-    phone_number = PhoneNumberField(unique=True)
+    phone_number = models.CharField(max_length=20, unique=True)
     email = models.EmailField(unique=True)
     user_type = models.CharField(max_length=10)
     birth_date = models.DateField()
@@ -50,7 +51,7 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'phone_number'
-    REQUIRED_FIELDS = ['first_name', 'second_name', 'email', 'birth_date']
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'email', 'birth_date']
 
     def __str__(self):
         return self.phone_number
@@ -59,16 +60,3 @@ class User(AbstractUser):
         verbose_name = _("User")
         verbose_name_plural = _("Users")
         db_table = 'Users'
-
-class Issue(models.Model):
-    
-    image = models.ImageField(upload_to='issue_photos/', null=True, blank=True)
-    title = models.CharField(max_length=100)
-    description = models.CharField(max_length=1000)
-    longitude = models.FloatField()
-    latitude = models.FloatField()
-
-    class Meta: 
-        verbose_name = _("Issue")
-        verbose_name_plural = _("Issues")
-        db_table = 'Issues'
