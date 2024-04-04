@@ -61,7 +61,6 @@ class User(AbstractUser):
         db_table = 'Users'
 
 class Issue(models.Model):
-    
     image = models.ImageField(upload_to='issue_photos/', null=True, blank=True)
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
