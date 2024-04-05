@@ -1,8 +1,9 @@
 from requests import request
 from rest_framework import viewsets
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .serializers.user import UserSerializer, UserCreateSerializer, UserUpdateSerializer
@@ -15,7 +16,6 @@ from issues.serializers.issue import IssueSerializer
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
@@ -39,6 +39,13 @@ class UserModelViewSet(viewsets.ModelViewSet):
         user.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(["get"], detail=False, serializer_class=UserSerializer, permission_classes=[IsAuthenticated])
+    def request_user_info(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class IssueViewSet(viewsets.ModelViewSet):
     queryset = Issue.objects.all()

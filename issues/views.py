@@ -1,13 +1,13 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
-from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
+from account.models import User
 from . import IssueStatus
 from .services.issue import CreateIssueService
 
 from .models import Issue
-from .serializers.issue import IssueSerializer, IssueChangeStatusSerializer
+from .serializers.issue import IssueSerializer, IssueChangeStatusSerializer, IssueCreateSerializer
 
 
 class IssueModelViewSet(viewsets.ModelViewSet):
@@ -16,10 +16,22 @@ class IssueModelViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_serializer_class(self):
+        if self.action == 'create':
+            return IssueCreateSerializer
+
         return super().get_serializer_class()
 
-    def perform_create(self, serializer):
-        serializer.save(creator=self.request.user)
+    def create(self, request, *args, **kwargs):
+        request.data['creator'] = self.request.user.id
+        request.data['status'] = IssueStatus.choices[0][1]
+
+        print('data:', request.data)
+
+        serializer = self.get_serializer(data=self.request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     # def send_issue(self, request, pk=None):
     #     issue = self.get_object()
@@ -58,7 +70,10 @@ class IssueModelViewSet(viewsets.ModelViewSet):
     )
     def change_status(self, request, *args, **kwargs):
         issue_id = kwargs.get('pk')
-        issue = get_object_or_404(Issue, pk=issue_id)
+        try:
+            issue = Issue.objects.get(pk=issue_id)
+        except Issue.DoesNotExist:
+            return Response({'status': 'Issue not found'}, status=400)
 
         current_status = issue.status
         status_id = int(request.data.get('status'))

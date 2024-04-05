@@ -3,6 +3,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
+from account import UserRole
+
 
 class CustomUserManager(UserManager):
     def create_user(self, phone_number, password=None, **extra_fields):
@@ -36,7 +38,7 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=32)
     phone_number = models.CharField(max_length=20, unique=True)
     email = models.EmailField(unique=True)
-    user_type = models.CharField(max_length=10)
+    user_type = models.CharField(max_length=10, choices=UserRole.choices)
     birth_date = models.DateField()
     account_created_time = models.DateField(auto_now_add=True)
     profile_pic = models.ImageField(upload_to='profile_pics/', null=True, blank=True)

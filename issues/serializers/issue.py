@@ -8,6 +8,12 @@ class IssueSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class IssueCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Issue
+        fields = ['image', 'title', 'description', 'longitude', 'latitude']
+
+
 class IssueChangeStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issue
