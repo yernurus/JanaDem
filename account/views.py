@@ -18,10 +18,11 @@ from issues.serializers.issue import IssueSerializer
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
+
 class UserCreateViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    http_method_names = ['post', 'patch']
+    http_method_names = ['post']
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -44,7 +45,7 @@ class UserCreateViewSet(viewsets.ModelViewSet):
 class UserModelViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    http_method_names = ['get', 'delete']
+    http_method_names = ['get', 'post', 'delete']
 
     @action(["get"], detail=False, serializer_class=UserSerializer, permission_classes=[IsAuthenticated])
     def request_user_info(self, request, *args, **kwargs):
