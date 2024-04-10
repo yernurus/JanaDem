@@ -13,6 +13,7 @@ from .serializers.jwt import CustomTokenObtainPairSerializer
 from .models import User
 from issues.models import Issue, IssueBonusPoint
 from issues.serializers.issue import IssueSerializer
+from account import UserRole
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -31,6 +32,14 @@ class UserModelViewSet(viewsets.ModelViewSet):
         return UserSerializer
 
     def create(self, request, *args, **kwargs):
+        user_type = int(request.data.get('user_type'))
+        if user_type == 1:
+            request.data['user_type'] = UserRole.choices[0][0]
+        elif user_type == 2:
+            request.data['user_type'] = UserRole.choices[1][0]
+        elif user_type == 3:
+            request.data['user_type'] = UserRole.choices[2][0]
+
         serializer = UserCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
