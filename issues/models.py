@@ -20,3 +20,18 @@ class Issue(models.Model):
         verbose_name = 'Issue'
         verbose_name_plural = 'Issues'
         db_table = 'Issue'
+
+
+class IssueBonusPoint(models.Model):
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    point = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.issue.title} - {self.user.username}'
+
+    class Meta:
+        verbose_name = 'Issue Bonus Point'
+        verbose_name_plural = 'Issue Bonus Points'
+        db_table = 'IssueBonusPoint'

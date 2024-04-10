@@ -28,7 +28,8 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'account',
-    'issues', 
+    'issues',
+    'market',
     
     'django.contrib.admin',
     'django.contrib.auth',

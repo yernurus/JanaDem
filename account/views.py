@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from requests import request
 from rest_framework import viewsets
 from rest_framework import status
@@ -10,7 +11,7 @@ from .serializers.user import UserSerializer, UserCreateSerializer, UserUpdateSe
 from .serializers.jwt import CustomTokenObtainPairSerializer
 
 from .models import User
-from issues.models import Issue
+from issues.models import Issue, IssueBonusPoint
 from issues.serializers.issue import IssueSerializer
 
 
@@ -45,11 +46,11 @@ class UserModelViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     http_method_names = ['get', 'delete']
 
-
     @action(["get"], detail=False, serializer_class=UserSerializer, permission_classes=[IsAuthenticated])
     def request_user_info(self, request, *args, **kwargs):
         user = request.user
         serializer = self.get_serializer(user)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

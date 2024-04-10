@@ -22,7 +22,8 @@ urlpatterns = [
     path(f'{api_version}', include([re_path(r"^user/login/?", CustomTokenObtainPairView.as_view(), name="jwt-create")])),
 
     path(f'{api_version}user/', include("account.urls")),
-    path(f'{api_version}issue/', include("issues.urls")), 
+    path(f'{api_version}issue/', include("issues.urls")),
+    path(f'{api_version}market/', include("market.urls")),
     # path(f'{api_version}akim/', include("akim.urls")),
 ]
 

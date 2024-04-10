@@ -2,12 +2,12 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from account.models import User
 from . import IssueStatus
-from .services.issue import CreateIssueService
+from .services.issue import IssueStatusService
 
-from .models import Issue
-from .serializers.issue import IssueSerializer, IssueChangeStatusSerializer, IssueCreateSerializer
+from .models import Issue, IssueBonusPoint
+from .serializers.issue import IssueSerializer, IssueChangeStatusSerializer, IssueCreateSerializer, \
+    UserBonusPointsSerializer
 from django.db import transaction
 from .permissions import GetIssuePermissions
 
@@ -23,13 +23,14 @@ class IssueModelViewSet(viewsets.ModelViewSet):
             return IssueCreateSerializer
 
         return super().get_serializer_class()
+
     #
     def get_queryset(self):
         return GetIssuePermissions(self.queryset, self.request.user).get_issues()
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-        request.data['status'] = IssueStatus.choices[0][1]
+        request.data['status'] = IssueStatus.choices[1][1]
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -37,59 +38,27 @@ class IssueModelViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
-    # def send_issue(self, request, pk=None):
-    #     issue = self.get_object()
-    #     issue.status = 'sent'
-    #     issue.save()
-    #     return Response({'status': 'Issue sent'})
-    #
-    # def approve_issue(self, request, pk=None):
-    #     issue = self.get_object()
-    #     issue.status = 'approved'
-    #     issue.save()
-    #     return Response({'status': 'Issue approved'})
-    #
-    # def reject_issue(self, request, pk=None):
-    #     issue = self.get_object()
-    #     issue.status = 'rejected'
-    #     issue.save()
-    #     return Response({'status': 'Issue rejected'})
-    #
-    # def mark_as_in_process(self, request, pk=None):
-    #     issue = self.get_object()
-    #     issue.status = 'in_process'
-    #     issue.save()
-    #     return Response({'status': 'Issue marked as in process'})
-    #
-    # def mark_as_finished(self, request, pk=None):
-    #     issue = self.get_object()
-    #     issue.status = 'finished'
-    #     issue.save()
-    #     return Response({'status': 'Issue marked as finished'})
-
+    @transaction.atomic
     @action(
         methods=['post'],
-        detail=True,
-
-    )
-
-    @action(
-        methods=['post'],
-        detail=True,
+        detail=False,
         serializer_class=IssueChangeStatusSerializer
     )
     def change_status(self, request, *args, **kwargs):
-        issue_id = kwargs.get('pk')
+        issue_id = request.data.get('issue_id')
         try:
             issue = Issue.objects.get(pk=issue_id)
         except Issue.DoesNotExist:
             return Response({'status': 'Issue not found'}, status=400)
 
         current_status = issue.status
-        status_id = int(request.data.get('status'))
+        next_statuses = IssueStatusService(issue).get_next_status()
+        status_id = int(request.data.get('status_id'))
 
         try:
+            if status_id not in [int(next_status) for next_status in next_statuses]:
+                return Response({'status': 'Invalid status'}, status=400)
+
             new_status = IssueStatus.choices[status_id]
         except IndexError:
             return Response({'status': 'Status not found'}, status=400)
@@ -97,7 +66,19 @@ class IssueModelViewSet(viewsets.ModelViewSet):
         if current_status == new_status:
             return Response({'status': 'Status not changed'}, status=400)
 
-        issue.status = new_status
+        issue.status = int(new_status[0])
         issue.save()
+        if issue.status == int(IssueStatus.choices[5][0]):
+            IssueBonusPoint.objects.create(issue=issue, user=issue.creator, point=200)
 
-        return Response({'status': issue.status[1]}, status=status.HTTP_200_OK)
+        return Response({'status': new_status[1]}, status=status.HTTP_200_OK)
+
+    @action(
+        methods=['get'],
+        detail=False,
+        serializer_class=UserBonusPointsSerializer
+    )
+    def my_bonus_points(self, request, *args, **kwargs):
+        bonus_points = IssueBonusPoint.objects.filter(user=request.user)
+        serializer = self.get_serializer(bonus_points, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
