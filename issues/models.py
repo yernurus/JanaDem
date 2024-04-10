@@ -25,7 +25,7 @@ class Issue(models.Model):
 class IssueBonusPoint(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    point = models.IntegerField()
+    point = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

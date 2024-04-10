@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
         for order in my_orders:
             balance -= order.item.price * order.quantity
 
-        return balance
+        return balance if balance else 0
 
     class Meta:
         model = User
