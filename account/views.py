@@ -18,11 +18,10 @@ from issues.serializers.issue import IssueSerializer
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
-
-class UserCreateViewSet(viewsets.ModelViewSet):
+class UserModelViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    http_method_names = ['post']
+    http_method_names = ['get', 'post', 'delete']
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -30,7 +29,7 @@ class UserCreateViewSet(viewsets.ModelViewSet):
         elif self.action == 'partial_update':
             return UserUpdateSerializer
         return UserSerializer
-    
+
     def create(self, request, *args, **kwargs):
         serializer = UserCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -40,13 +39,6 @@ class UserCreateViewSet(viewsets.ModelViewSet):
         user.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-class UserModelViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    http_method_names = ['get', 'post', 'delete']
-
     @action(["get"], detail=False, serializer_class=UserSerializer, permission_classes=[IsAuthenticated])
     def request_user_info(self, request, *args, **kwargs):
         user = request.user
