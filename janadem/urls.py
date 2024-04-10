@@ -19,7 +19,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path(f'{api_version}api-auth/', include('rest_framework.urls')),
-    path(f'{api_version}', include([re_path(r"^jwt/create/?", CustomTokenObtainPairView.as_view(), name="jwt-create")])),
+    path(f'{api_version}', include([re_path(r"^user/login/?", CustomTokenObtainPairView.as_view(), name="jwt-create")])),
 
     path(f'{api_version}user/', include("account.urls")),
     path(f'{api_version}issue/', include("issues.urls")), 

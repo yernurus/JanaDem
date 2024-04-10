@@ -8,7 +8,7 @@ class Issue(models.Model):
     image = models.ImageField(upload_to='issue_photos/', null=True, blank=True)
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     longitude = models.FloatField()
     latitude = models.FloatField()
     status = models.CharField(max_length=20, null=False, choices=IssueStatus.choices)

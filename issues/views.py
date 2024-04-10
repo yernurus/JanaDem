@@ -8,30 +8,35 @@ from .services.issue import CreateIssueService
 
 from .models import Issue
 from .serializers.issue import IssueSerializer, IssueChangeStatusSerializer, IssueCreateSerializer
+from django.db import transaction
+from .permissions import GetIssuePermissions
 
 
 class IssueModelViewSet(viewsets.ModelViewSet):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
     http_method_names = ['get', 'post', 'patch', 'delete']
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
         if self.action == 'create':
             return IssueCreateSerializer
 
         return super().get_serializer_class()
+    #
+    def get_queryset(self):
+        return GetIssuePermissions(self.queryset, self.request.user).get_issues()
 
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
-        request.data['creator'] = self.request.user.id
         request.data['status'] = IssueStatus.choices[0][1]
 
-        print('data:', request.data)
-
-        serializer = self.get_serializer(data=self.request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        serializer.save(creator=request.user)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
     # def send_issue(self, request, pk=None):
     #     issue = self.get_object()
@@ -62,6 +67,12 @@ class IssueModelViewSet(viewsets.ModelViewSet):
     #     issue.status = 'finished'
     #     issue.save()
     #     return Response({'status': 'Issue marked as finished'})
+
+    @action(
+        methods=['post'],
+        detail=True,
+
+    )
 
     @action(
         methods=['post'],
