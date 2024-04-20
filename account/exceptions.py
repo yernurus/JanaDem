@@ -1,6 +1,7 @@
 from rest_framework.exceptions import AuthenticationFailed
 from django.utils.translation import gettext_lazy as _
 
+#Here the all exceptions to display readable
 
 class UserNotActive(AuthenticationFailed):
     default_detail = _('Ваш аккаунт временно отключен, обратитесь к менеджеру!')

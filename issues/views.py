@@ -11,23 +11,25 @@ from .serializers.issue import IssueSerializer, IssueChangeStatusSerializer, Iss
 from django.db import transaction
 from .permissions import GetIssuePermissions
 
-
+# General Issue model viewset 
 class IssueModelViewSet(viewsets.ModelViewSet):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
     http_method_names = ['get', 'post', 'patch', 'delete']
     permission_classes = [permissions.IsAuthenticated]
 
+    #function for creating the new Issue
     def get_serializer_class(self):
         if self.action == 'create':
             return IssueCreateSerializer
 
         return super().get_serializer_class()
 
-    #
+    # get Issues with permission
     def get_queryset(self):
         return GetIssuePermissions(self.queryset, self.request.user).get_issues()
 
+    # create Issue and give the status - Created
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         request.data['status'] = IssueStatus.choices[1][1]
@@ -44,6 +46,7 @@ class IssueModelViewSet(viewsets.ModelViewSet):
         detail=False,
         serializer_class=IssueChangeStatusSerializer
     )
+    #viewset for changing Issue details
     def change_status(self, request, *args, **kwargs):
         issue_id = request.data.get('issue_id')
         try:
@@ -78,6 +81,7 @@ class IssueModelViewSet(viewsets.ModelViewSet):
         detail=False,
         serializer_class=UserBonusPointsSerializer
     )
+    #function for see the User's bonus points to User
     def my_bonus_points(self, request, *args, **kwargs):
         bonus_points = IssueBonusPoint.objects.filter(user=request.user)
         serializer = self.get_serializer(bonus_points, many=True)

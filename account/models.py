@@ -6,7 +6,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 from account import UserRole
 
 
+
+#CustomUserManager is the django-based function for creating User which comes from UserManager
 class CustomUserManager(UserManager):
+    #for creating standart User
     def create_user(self, phone_number, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
@@ -20,7 +23,8 @@ class CustomUserManager(UserManager):
         user.save(using=self._db)
 
         return user
-
+    
+    #for creating superuser for administration
     def create_superuser(self, phone_number, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
@@ -32,7 +36,7 @@ class CustomUserManager(UserManager):
 
         return self.create_user(phone_number, password, **extra_fields)
 
-
+#Model class User for storing and displaying correctly User data
 class User(AbstractUser):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=32)
@@ -57,7 +61,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.phone_number
-
+    #Meta class for defining the tablename and etc.
     class Meta:
         verbose_name = _("User")
         verbose_name_plural = _("Users")

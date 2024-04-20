@@ -4,12 +4,13 @@ from issues import IssueStatus
 from account.serializers.user import UserSerializer
 from ..services.issue import IssueStatusService
 
-
+#Serializer for Issue
 class IssueSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source='get_status_display')
     creator = UserSerializer(read_only=True)
     next_statuses = serializers.SerializerMethodField()
 
+    #function for defining next available status
     def get_next_statuses(self, obj):
         current_status = obj.status
         next_statuses = IssueStatusService(obj).get_next_status()
@@ -25,19 +26,19 @@ class IssueSerializer(serializers.ModelSerializer):
         model = Issue
         fields = ['id', 'image', 'title', 'description', 'longitude', 'latitude', 'status', 'creator', 'next_statuses']
 
-
+#Serializer for creating Issue
 class IssueCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issue
         fields = ['image', 'title', 'description', 'longitude', 'latitude']
 
-
+#Serizlizer for changing Issue details
 class IssueChangeStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issue
         fields = ['id', 'status']
 
-
+#Serializer for earning Bonus points when User's Issue gets finished
 class UserBonusPointsSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     issue = IssueSerializer(read_only=True)

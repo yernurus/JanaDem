@@ -2,7 +2,7 @@ from django.db import models
 from account.models import User
 from issues import IssueStatus
 
-
+#General Issue model for storing and retrieving data
 # Create your models here.
 class Issue(models.Model):
     image = models.ImageField(upload_to='issue_photos/', null=True, blank=True)
@@ -21,7 +21,7 @@ class Issue(models.Model):
         verbose_name_plural = 'Issues'
         db_table = 'Issue'
 
-
+#Model for Bonuses
 class IssueBonusPoint(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

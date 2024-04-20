@@ -6,6 +6,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from account.views import CustomTokenObtainPairView
 
 
+#THE MAIN NAVIGATING SYSTEM. WE USE 'SWAGGER' FOR DISPLAYING ALL AVAILABLE URLS AND METHODS.
 api_version = 'api/v1/'
 
 

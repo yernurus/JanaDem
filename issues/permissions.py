@@ -1,7 +1,7 @@
 from account import permissions
 from django.db.models import Q
 
-
+#Here is the permission to get the Issue with status that belongs to User Role
 class GetIssuePermissions:
     def __init__(self, queryset, user):
         self.queryset = queryset
