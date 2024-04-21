@@ -27,18 +27,17 @@ JANADEM encourages civic engagement by empowering citizens to report community i
 ## Technologies Used
 
 - Django: ~3.2
+- Pillow: 10.0.0
+- Django REST Framework: ~3.12.4
+- Pandas: 2.1.3
 - Django-phonenumber-field: ~5.1.0
 - Django-extensions: ~3.1.3
 - Django-crispy-forms: ~1.11.2
 - Django-sequences: 2.6
-- Pillow: 10.0.0
-- Django REST Framework: ~3.12.4
 - Django-cors-headers: ~3.7.0
 - Django-environ: 0.9.0
 - Gunicorn: 20.1.0
-- PostgreSQL
 - Python-dotenv: ~0.21.0
-- Pandas: 2.1.3
 - Requests: ~2.31.0
 
 ## Installation
@@ -73,11 +72,11 @@ http://127.0.0.1:8000/
 and
 127.0.0.1:8000/api/v1/swagger/ui/#/
 
-## Usage
+**Usage**
 
 Once the backend server is running, you can use the JANADEM platform by accessing the provided API endpoints. Refer to the API documentation or project documentation for information on available endpoints and usage examples.
 
-## API Documentation
+**API Documentation**
 
 The API documentation for this project is available [here](http://janadem.kz/api/v1/swagger/ui/#/). It provides detailed information about the endpoints, request payloads, and responses of the JANADEM API.
 
