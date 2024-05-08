@@ -35,19 +35,22 @@ class CreateIssueService:
 
 
 class IssueStatusService:
-    def __init__(self, issue):
+    def __init__(self, issue, user_type):
         self.issue = issue
         self.choices = IssueStatus.choices
+        self.user_type = user_type
 
     def get_next_status(self):
+
         current_status = self.issue.status
         next_statuses = []
+        user_type = self.user_type
 
-        if current_status == self.choices[0][0] or current_status == self.choices[1][0]:
+        if current_status == self.choices[0][0] or current_status == self.choices[1][0] and user_type == 'Moderator':
             next_statuses = [self.choices[2][0], self.choices[3][0]]
-        if current_status == self.choices[2][0]:
+        if current_status == self.choices[2][0] and user_type == 'Akimat':
             next_statuses = [self.choices[4][0]]
-        if current_status == self.choices[4][0]:
+        if current_status == self.choices[4][0] and user_type == 'Akimat':
             next_statuses = [self.choices[5][0]]
 
         return next_statuses

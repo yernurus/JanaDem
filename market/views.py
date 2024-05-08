@@ -4,7 +4,8 @@ from rest_framework.response import Response
 
 from issues.models import IssueBonusPoint
 from .models import MarketItem, MarketItemOrder
-from .serializers.market import CreateMarketItemSerializer, MarketItemSerializer, MarketItemOrderSerializer
+from .serializers.market import CreateMarketItemSerializer, MarketItemSerializer, MarketItemOrderSerializer, CreateMarketItemOrderSerializer
+
 
 #viewset for Market Item
 class MarketItemModelViewSet(viewsets.ModelViewSet):
@@ -18,6 +19,11 @@ class MarketItemModelViewSet(viewsets.ModelViewSet):
             return CreateMarketItemSerializer
         return super().get_serializer_class()
 
+    def create(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return super().create(request, *args, **kwargs)
+        return Response({'status': 'User is not superuser'}, status=400)
+
 #viewset for Order 
 class MarketOrderModelViewSet(viewsets.ModelViewSet):
     queryset = MarketItemOrder.objects.all()
@@ -27,6 +33,11 @@ class MarketOrderModelViewSet(viewsets.ModelViewSet):
     #function for getting user-dependent list of orders
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CreateMarketItemOrderSerializer
+        return super().get_serializer_class()
 
     #function for creating an order while User wants to order some Market Item
     def create(self, request, *args, **kwargs):

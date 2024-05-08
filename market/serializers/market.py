@@ -24,3 +24,8 @@ class MarketItemOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = MarketItemOrder
         fields = ['item', 'user', 'quantity', 'created_at']
+
+
+class CreateMarketItemOrderSerializer(serializers.Serializer):
+    item_id = serializers.IntegerField()
+    quantity = serializers.IntegerField()

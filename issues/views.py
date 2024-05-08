@@ -32,13 +32,23 @@ class IssueModelViewSet(viewsets.ModelViewSet):
     # create Issue and give the status - Created
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-        request.data['status'] = IssueStatus.choices[1][1]
+        issue_status = IssueStatus.choices[1][0]
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(creator=request.user)
 
+        serializer.instance.status = issue_status
+        serializer.instance.save()
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def partial_update(self, request, *args, **kwargs):
+        status = request.data.get('status')
+        if status:
+            print(status)
+            request.data['status'] = IssueStatus.choices[int(request.data['status'])][1]
+        return super().partial_update(request, *args, **kwargs)
 
     @transaction.atomic
     @action(
@@ -46,7 +56,7 @@ class IssueModelViewSet(viewsets.ModelViewSet):
         detail=False,
         serializer_class=IssueChangeStatusSerializer
     )
-    #viewset for changing Issue details
+
     def change_status(self, request, *args, **kwargs):
         issue_id = request.data.get('issue_id')
         try:
@@ -55,7 +65,7 @@ class IssueModelViewSet(viewsets.ModelViewSet):
             return Response({'status': 'Issue not found'}, status=400)
 
         current_status = issue.status
-        next_statuses = IssueStatusService(issue).get_next_status()
+        next_statuses = IssueStatusService(issue, request.user.user_type).get_next_status()
         status_id = int(request.data.get('status_id'))
 
         try:
