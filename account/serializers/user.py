@@ -17,9 +17,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_balance(self, obj):
         balance = obj.issuebonuspoint_set.all().aggregate(Sum('point'))['point__sum']
+        if not balance:
+            balance = 0
         my_orders = MarketItemOrder.objects.filter(user=obj)
         for order in my_orders:
-            balance -= order.item.price * order.quantity
+            if balance == 0:
+                balance = 0
+            else:
+                balance -= order.item.price * order.quantity if order.quantity else order.item.price
 
         return balance if balance else 0
 

@@ -35,7 +35,7 @@ class UserModelViewSet(viewsets.ModelViewSet):
         return UserSerializer
     #function for creating User with UserRoles
     def create(self, request, *args, **kwargs):
-        user_type = int(request.data.get('user_type'))
+        user_type = request.data.get('user_type')
         if user_type == 1:
             request.data['user_type'] = UserRole.choices[0][0]
         elif user_type == 2:

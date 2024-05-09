@@ -13,7 +13,7 @@ class IssueSerializer(serializers.ModelSerializer):
     #function for defining next available status
     def get_next_statuses(self, obj):
         current_status = obj.status
-        next_statuses = IssueStatusService(obj).get_next_status()
+        next_statuses = IssueStatusService(obj, self.context['request'].user.user_type).get_next_status()
 
         data = []
         for next_status in next_statuses:
@@ -33,17 +33,15 @@ class IssueCreateSerializer(serializers.ModelSerializer):
         fields = ['image', 'title', 'description', 'longitude', 'latitude']
 
 #Serizlizer for changing Issue details
-class IssueChangeStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Issue
-        fields = ['id', 'status']
+class IssueChangeStatusSerializer(serializers.Serializer):
+    issue_id = serializers.IntegerField()
+    status_id = serializers.IntegerField()
+
 
 #Serializer for earning Bonus points when User's Issue gets finished
 class UserBonusPointsSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    issue = IssueSerializer(read_only=True)
     created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = IssueBonusPoint
-        fields = ['user', 'issue', 'point', 'created_at']
+        fields = ['issue', 'point', 'created_at']
