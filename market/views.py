@@ -1,10 +1,12 @@
 from django.db.models import Sum
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 from issues.models import IssueBonusPoint
 from .models import MarketItem, MarketItemOrder
 from .serializers.market import CreateMarketItemSerializer, MarketItemSerializer, MarketItemOrderSerializer, CreateMarketItemOrderSerializer
+from .serializers.market import MyOrdersSerializer
 
 
 #viewset for Market Item
@@ -69,3 +71,9 @@ class MarketOrderModelViewSet(viewsets.ModelViewSet):
             quantity=quantity
         )
         return Response(self.get_serializer(MarketItemOrder.objects.last()).data, status=status.HTTP_201_CREATED)
+    
+    @action(["GET"], detail=False, serializer_class=MyOrdersSerializer, permission_classes=[permissions.IsAuthenticated])
+    def my_orders(self, request):
+        queryset = self.get_queryset().filter(user=request.user)
+        serializer = MyOrdersSerializer(queryset, many=True)
+        return Response(serializer.data)

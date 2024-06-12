@@ -24,7 +24,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class UserModelViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    http_method_names = ['get', 'post', 'delete']
+    http_method_names = ['get', 'post', 'delete', 'patch']
 
     #ViewSet for navigate the actions
     def get_serializer_class(self):
